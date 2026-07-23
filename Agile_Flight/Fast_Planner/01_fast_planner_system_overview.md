@@ -148,12 +148,11 @@ The core output is **continuous, time-parameterized quadrotor trajectory**.
 
 At the planning level, trajectory provides quantities such as:
 
-$$
+```math
 \mathbf{p}(t),\qquad
 \mathbf{v}(t)=\dot{\mathbf{p}}(t),\qquad
 \mathbf{a}(t)=\ddot{\mathbf{p}}(t)
-$$
-
+```
 The planner publishes generated trajectory for execution by trajectory server, simulator, or downstream controller.
 
 The low-level attitude and motor controller is conceptually downstream of core planning algorithm and is not main subject of Fast-Planner's trajectory-generation method.
@@ -199,16 +198,14 @@ The mapping system also builds a Euclidean signed distance field.
 
 For a position $\mathbf{x}$, the distance map provides:
 
-$$
+```math
 d(\mathbf{x})
-$$
-
+```
 and its spatial gradient:
 
-$$
+```math
 \nabla d(\mathbf{x})
-$$
-
+```
 The distance value describes obstacle clearance. The gradient supplies the direction in which the trajectory should move to increase clearance.
 
 This creates a division of responsibility:
@@ -238,7 +235,7 @@ The planner combines:
 
 For the double-integrator model used in the paper:
 
-$$
+```math
 \mathbf{x}
 =
 \begin{bmatrix}
@@ -247,8 +244,7 @@ $$
 \end{bmatrix},
 \qquad
 \mathbf{u}=\mathbf{a}
-$$
-
+```
 where:
 
 - $\mathbf{p}$ is position,
@@ -276,18 +272,16 @@ Instead of connecting neighboring voxel centers with straight lines, Kinodynamic
 
 For constant acceleration input $\mathbf{u}$ over duration $\tau$:
 
-$$
+```math
 \mathbf{p}(t)
 =
 \mathbf{p}_0+\mathbf{v}_0t+\frac{1}{2}\mathbf{u}t^2
-$$
-
-$$
+```
+```math
 \mathbf{v}(t)
 =
 \mathbf{v}_0+\mathbf{u}t
-$$
-
+```
 Each candidate primitive is checked for:
 
 - collision,
@@ -299,12 +293,11 @@ Each candidate primitive is checked for:
 
 Paper defines trajectory cost that combines control effort and time:
 
-$$
+```math
 \mathcal{J}(T)
 =
 \int_0^T \lVert\mathbf{u}(t)\rVert^2\,dt+\rho T
-$$
-
+```
 First term penalizes control effort.
 
 Second term penalizes duration.
@@ -344,18 +337,16 @@ B-spline trajectory is defined by:
 
 Conceptually:
 
-$$
+```math
 \mathbf{p}(t)
 =
 \sum_i \mathbf{Q}_i B_{i,p_b}(t)
-$$
-
+```
 The paper uses a cubic B-spline:
 
-$$
+```math
 p_b=3
-$$
-
+```
 The search trajectory provides initial geometry from which the B-spline trajectory is initialized.
 
 Back-end then optimizes subset of B-spline control points while preserving the boundary state.
@@ -391,7 +382,7 @@ Back-end improves initial trajectory in three principal aspects:
 
 The baseline objective in the paper is:
 
-$$
+```math
 f_{\mathrm{total}}
 =
 \lambda_1 f_s
@@ -399,8 +390,7 @@ f_{\mathrm{total}}
 \lambda_2 f_c
 +
 \lambda_3(f_v+f_a)
-$$
-
+```
 where:
 
 - $f_s$: smoothness cost,
@@ -418,10 +408,9 @@ A strongly bent control-point arrangement produces larger penalty. Optimization 
 
 For control point $\mathbf{Q}_i$, ESDF supplies:
 
-$$
+```math
 d(\mathbf{Q}_i)
-$$
-
+```
 and corresponding gradient.
 
 When the distance is smaller than desired threshold, collision cost pushes the control point away from the obstacle.
@@ -438,20 +427,18 @@ For uniform B-spline with knot interval $\Delta t$, derivative control points ar
 
 Paper gives:
 
-$$
+```math
 \mathbf{V}_i
 =
 \frac{1}{\Delta t}
 \left(\mathbf{Q}_{i+1}-\mathbf{Q}_i\right)
-$$
-
-$$
+```
+```math
 \mathbf{A}_i
 =
 \frac{1}{\Delta t}
 \left(\mathbf{V}_{i+1}-\mathbf{V}_i\right)
-$$
-
+```
 Velocity and acceleration violations can therefore be penalized through derivative control points rather than checking only isolated continuous-time samples.
 
 ### 9.5 Optimization output
