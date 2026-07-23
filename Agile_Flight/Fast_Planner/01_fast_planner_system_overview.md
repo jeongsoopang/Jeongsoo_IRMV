@@ -148,11 +148,11 @@ The core output is **continuous, time-parameterized quadrotor trajectory**.
 
 At the planning level, trajectory provides quantities such as:
 
-\[
+$$
 \mathbf{p}(t),\qquad
 \mathbf{v}(t)=\dot{\mathbf{p}}(t),\qquad
 \mathbf{a}(t)=\ddot{\mathbf{p}}(t)
-\]
+$$
 
 The planner publishes generated trajectory for execution by trajectory server, simulator, or downstream controller.
 
@@ -197,17 +197,17 @@ The quadrotor is handled in configuration space by inflating obstacles and treat
 
 The mapping system also builds a Euclidean signed distance field.
 
-For a position \(\mathbf{x}\), the distance map provides:
+For a position $\mathbf{x}$, the distance map provides:
 
-\[
+$$
 d(\mathbf{x})
-\]
+$$
 
 and its spatial gradient:
 
-\[
+$$
 \nabla d(\mathbf{x})
-\]
+$$
 
 The distance value describes obstacle clearance. The gradient supplies the direction in which the trajectory should move to increase clearance.
 
@@ -216,7 +216,7 @@ This creates a division of responsibility:
 - **Occupancy information** supports binary collision checking in search.
 - **Distance and gradient information** support continuous trajectory deformation in optimization.
 
-Paper often uses **Euclidean distance field (EDF)**, while the repo-documentation describes the implementation as **ESDF**. 
+Paper often uses **Euclidean distance field (EDF)**, while the repo-documentation describes the implementation as **ESDF**.
 
 This document uses **ESDF** when discussing the software module.
 
@@ -238,7 +238,7 @@ The planner combines:
 
 For the double-integrator model used in the paper:
 
-\[
+$$
 \mathbf{x}
 =
 \begin{bmatrix}
@@ -247,13 +247,13 @@ For the double-integrator model used in the paper:
 \end{bmatrix},
 \qquad
 \mathbf{u}=\mathbf{a}
-\]
+$$
 
 where:
 
-- \(\mathbf{p}\) is position,
-- \(\mathbf{v}\) is velocity,
-- \(\mathbf{u}\) is the acceleration-like control input.
+- $\mathbf{p}$ is position,
+- $\mathbf{v}$ is velocity,
+- $\mathbf{u}$ is the acceleration-like control input.
 
 This differs from standard grid A*, whose node commonly contains only position or voxel index.
 
@@ -274,19 +274,19 @@ Search front-end must quickly produce initial trajectory that is:
 
 Instead of connecting neighboring voxel centers with straight lines, Kinodynamic A* expands **motion primitives**.
 
-For constant acceleration input \(\mathbf{u}\) over duration \(\tau\):
+For constant acceleration input $\mathbf{u}$ over duration $\tau$:
 
-\[
+$$
 \mathbf{p}(t)
 =
 \mathbf{p}_0+\mathbf{v}_0t+\frac{1}{2}\mathbf{u}t^2
-\]
+$$
 
-\[
+$$
 \mathbf{v}(t)
 =
 \mathbf{v}_0+\mathbf{u}t
-\]
+$$
 
 Each candidate primitive is checked for:
 
@@ -299,13 +299,13 @@ Each candidate primitive is checked for:
 
 Paper defines trajectory cost that combines control effort and time:
 
-\[
+$$
 \mathcal{J}(T)
 =
-\int_0^T \|\mathbf{u}(t)\|^2 dt+\rho T
-\]
+\int_0^T \lVert\mathbf{u}(t)\rVert^2\,dt+\rho T
+$$
 
-First term penalizes control effort. 
+First term penalizes control effort.
 
 Second term penalizes duration.
 
@@ -338,23 +338,23 @@ Fast-Planner represents the optimized trajectory using **B-spline**.
 
 B-spline trajectory is defined by:
 
-- polynomial degree \(p_b\),
-- control points \(\{\mathbf{Q}_0,\dots,\mathbf{Q}_N\}\),
-- knot vector \(\{t_0,\dots,t_M\}\).
+- polynomial degree $p_b$,
+- control points $\{\mathbf{Q}_0,\dots,\mathbf{Q}_N\}$,
+- knot vector $\{t_0,\dots,t_M\}$.
 
 Conceptually:
 
-\[
+$$
 \mathbf{p}(t)
 =
 \sum_i \mathbf{Q}_i B_{i,p_b}(t)
-\]
+$$
 
 The paper uses a cubic B-spline:
 
-\[
+$$
 p_b=3
-\]
+$$
 
 The search trajectory provides initial geometry from which the B-spline trajectory is initialized.
 
@@ -391,7 +391,7 @@ Back-end improves initial trajectory in three principal aspects:
 
 The baseline objective in the paper is:
 
-\[
+$$
 f_{\mathrm{total}}
 =
 \lambda_1 f_s
@@ -399,14 +399,14 @@ f_{\mathrm{total}}
 \lambda_2 f_c
 +
 \lambda_3(f_v+f_a)
-\]
+$$
 
 where:
 
-- \(f_s\): smoothness cost,
-- \(f_c\): collision or clearance cost,
-- \(f_v\): velocity-limit penalty,
-- \(f_a\): acceleration-limit penalty.
+- $f_s$: smoothness cost,
+- $f_c$: collision or clearance cost,
+- $f_v$: velocity-limit penalty,
+- $f_a$: acceleration-limit penalty.
 
 ### 9.2 Smoothness
 
@@ -416,11 +416,11 @@ A strongly bent control-point arrangement produces larger penalty. Optimization 
 
 ### 9.3 Collision and clearance
 
-For control point \(\mathbf{Q}_i\), ESDF supplies:
+For control point $\mathbf{Q}_i$, ESDF supplies:
 
-\[
+$$
 d(\mathbf{Q}_i)
-\]
+$$
 
 and corresponding gradient.
 
@@ -434,23 +434,23 @@ Optimization: How far is this control point from an obstacle, and in which direc
 
 ### 9.4 Dynamic feasibility
 
-For uniform B-spline with knot interval \(\Delta t\), derivative control points are related to position control points.
+For uniform B-spline with knot interval $\Delta t$, derivative control points are related to position control points.
 
 Paper gives:
 
-\[
+$$
 \mathbf{V}_i
 =
 \frac{1}{\Delta t}
-(\mathbf{Q}_{i+1}-\mathbf{Q}_i)
-\]
+\left(\mathbf{Q}_{i+1}-\mathbf{Q}_i\right)
+$$
 
-\[
+$$
 \mathbf{A}_i
 =
 \frac{1}{\Delta t}
-(\mathbf{V}_{i+1}-\mathbf{V}_i)
-\]
+\left(\mathbf{V}_{i+1}-\mathbf{V}_i\right)
+$$
 
 Velocity and acceleration violations can therefore be penalized through derivative control points rather than checking only isolated continuous-time samples.
 
@@ -519,7 +519,6 @@ Fast-Planner supports repeated trajectory regeneration as the vehicle moves and 
 ---
 
 ## 12. One Complete Planning Cycle
-
 
 | Step | Operation | Main output |
 |---:|---|---|
@@ -602,7 +601,6 @@ Because pushing a trajectory away from obstacles can increase path length. Keepi
 Because only problematic regions need more time. Uniform scaling would unnecessarily slow feasible portions of the trajectory.
 
 ---
-
 
 ## 16. References
 
